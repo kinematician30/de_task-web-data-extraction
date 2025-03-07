@@ -1,5 +1,4 @@
 import time
-
 import pandas as pd
 import requests
 from bs4 import BeautifulSoup
@@ -85,7 +84,7 @@ def main():
     base_url = "https://hotels.ng/hotels-in-abia"
     header = {"User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/133.0.0.0 Safari/537.36"}
 
-    all_hotels_listing = []
+    all_hotels_listing = []  # Temporary Storage
     current_url = base_url
 
     while current_url:
