@@ -1,4 +1,5 @@
 import time
+
 import pandas as pd
 import requests
 from bs4 import BeautifulSoup
@@ -72,14 +73,15 @@ def extract_hotel_data(listing):
 def get_next_page_url(html_content):
     """Extracts the URL of the next page from the pagination."""
     parsed_page = BeautifulSoup(html_content, 'html.parser')
-    next_button = parsed_page.find('ul', class_='pagination').find('li', class_='placeholders nextBtn')
+    next_button = (parsed_page.find('ul', class_='pagination').
+                   find('li', class_='placeholders nextBtn'))
     if next_button:
         return next_button.find('a')['href']
     else:
         return None
 
 
-def main():
+def main(): 
     """Main function to orchestrate the scraping process."""
     base_url = "https://hotels.ng/hotels-in-abia"
     header = {"User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/133.0.0.0 Safari/537.36"}
@@ -100,7 +102,7 @@ def main():
             next_page_url = get_next_page_url(html_content)
             if next_page_url:
                 current_url = next_page_url
-                print(f"Scraping next page: {current_url[-1]}")
+                print(f"Scraping next page: {current_url}")
                 time.sleep(2)  # Add a delay before scraping the next page
             else:
                 current_url = None  # Stop scraping if there's no next page
