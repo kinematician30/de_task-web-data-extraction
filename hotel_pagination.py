@@ -30,13 +30,20 @@ def extract_hotel_data(listing):
         hotel_name = listing.find('h2',
                                   class_="listing-hotels-name").text
         hotel_address = listing.find('p',
-                                     class_='listing-hotels-address color-dark').text.strip().split()
-        hotel_address = " ".join(hotel_address).split(' - ')
-        address = hotel_address[1]
-        city = hotel_address[0].split(',')[0]
-        state = hotel_address[0].split(',')[1].strip()
-        price = listing.find('p', class_='listing-hotels-prices-discount').text
-        price = price.strip().split()[0].replace('₦', '').replace(',', '')
+                                     class_='listing-hotels-address color-dark')
+        # we will have to transform the hotel addresses for missing data
+        if hotel_address:
+            hotel_address = hotel_address.text.strip().split()
+            hotel_address = " ".join(hotel_address).split(' - ')
+            address = hotel_address[1]
+            city = hotel_address[0].split(',')[0]
+            state = hotel_address[0].split(',')[1].strip()
+        else:
+            address = city = state = "No Record"
+        price = listing.find('p', class_='listing-hotels-prices-discount')
+        if price:
+            price = price.text
+            price = price.strip().split()[0].replace('₦', '').replace(',', '')
         rated = listing.find('p', class_='listing-hotels-rating')
         if rated is None:
             rating = "Not Available"
@@ -51,8 +58,8 @@ def extract_hotel_data(listing):
             all_facilities = facility.find_all()
             all_facilities = [fac.find('p').text for fac in all_facilities if fac.find('p') is not None]
             all_facilities = ", ".join(all_facilities)
-        likes = listing.find('div', class_='listing-hotels-likes').text
-        likes = likes.strip().split()[0]
+        likes = listing.find('div', class_='listing-hotels-likes')
+        likes = likes.text.strip().split()[0] if likes is not None else 0
 
         return {
             'hotel_name': hotel_name,
@@ -105,7 +112,9 @@ def main():
                 print(f"Scraping next page: {current_url}")
                 time.sleep(2)  # Add a delay before scraping the next page
             else:
-                current_url = None  # Stop scraping if there's no next page
+                # Stop scraping if there's no next page
+                print("End of all pages")
+                break
         else:
             break  # Stop scraping if there's an error fetching the page
 
